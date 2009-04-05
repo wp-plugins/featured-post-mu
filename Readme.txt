@@ -1,4 +1,4 @@
-=== Featured Posts List  ===
+=== Featured Posts WPMU  ===
 Contributors: mamoun.othman
 Plugin URI: none
 Donate link: none
@@ -29,7 +29,7 @@ just display specific post who selected by admin, from admin panel. it creates a
 
 == Installation ==
 
-1. unzip file and upload file featured-posts-list.php into your /wp-content/plugins/.
+1. unzip file and upload file featured-posts-mu.php into your /wp-content/plugins/.
 2. Go to your plugins page and activate plugin.
 3. Go to Settings/options >> Featured Posts wpmu tab to update posts Ids to display under your featured Posts WPMU on your site.
 4. you can select the post want be check the box befor it.
