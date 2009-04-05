@@ -94,9 +94,11 @@ function posts_options_page() {
 	echo '<h2>Click on checkbox to create Featured Post</h2>';
 	echo '<h2><span style="background-color:#FFFBCC">Note</span>: you can use this plugin by put this code where erver you want. </h2><br /> <strong>featuredPostsList()</strong>';
 	echo '<strong>This plugin gives full freedom to display multiple blogs as Featured Blogs List to your site.</strong><br />';
+	
+	echo '<form name="form'.$i.'" action="" method="post">';
 	for($i=0;$i<$total_page;$i++) {
 		
-	echo '<form name="form'.$i.'" action="" method="post">';
+	
 
 	print "<div class='virtualpage'>";
 	
@@ -145,13 +147,16 @@ function posts_options_page() {
 	}
 	print "</tbody>";
 	print "</table><Div class='submit'><input type='submit' value='Save your list' /></div></div>";
-	print '</form>';
+	
 	}
+	
+	print '</form>';
+	
 	$home_url = get_option("home");
 	print "</div>";
 	print '<div id="gallerypaginate" class="paginationstyle"><a href="#" rel="previous">Prev</a> <span class="flatview"></span> <a href="#" rel="next">Next</a></div>';
 	print "</div>";
-	print '<script type="text/javascript" src="'. $home_url .'/wp-content/plugins/featured-posts-mu/virtualpaginate.js"></script>';
+	print '<script type="text/javascript" src="'. $home_url .'/wp-content/plugins/featured-posts-list/virtualpaginate.js"></script>';
 	print '<script type="text/javascript">';
 	print 'var gallery=new virtualpaginate({piececlass:"virtualpage",piececontainer: "div",pieces_per_page: 1,defaultpage: 0,persist: false});';
 	print 'gallery.buildpagination(["gallerypaginate"]);';
