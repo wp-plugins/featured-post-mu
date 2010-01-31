@@ -1,10 +1,9 @@
 === Featured Posts WPMU  ===
 Contributors: mamoun.othman
 Plugin URI: none
-Donate link: none
-Tags: post listing, featured posts, multiple posts, specific post, select post,
-Requires at least: 2.0
-Tested up to: 2.7
+Tags: post listing, featured posts, multiple posts, specific post, select post,MU pulgin
+Requires at least: 2.7
+Tested up to: 2.9.1
 Stable tag: trunk 
 
 The Display specific multiple posts on sidebar.
