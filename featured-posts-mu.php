@@ -26,27 +26,71 @@ Author URI: none
 
 // Main function to diplay on front end
 
+function ftable_exists($tablename, $database = false) {
+
+    if(!$database) {
+        $res = mysql_query("SELECT DATABASE()");
+        $database = mysql_result($res, 0);
+    }
+
+    $res = mysql_query("
+        SELECT COUNT(*) AS count 
+        FROM information_schema.tables 
+        WHERE table_schema = '$database' 
+        AND table_name = '$tablename'
+    ");
+
+    return mysql_result($res, 0) == 1;
+
+}
+
+/*function featured_posts_list_sort_by_managers($a, $b)
+{
+	$managers = array(28, 27, 38, 45, 74, 79);
+	
+	$blog_id_a = explode(',', $a);
+	$blog_id_a = $blog_id_a[1];
+	
+	
+	$blog_id_b = explode(',', $b);
+	$blog_id_b = $blog_id_b[1];
+	
+	if (in_array($blog_id_a, $managers) && in_array($blog_id_b, $managers)) return 0;
+	if (in_array($blog_id_a, $managers)) return -1; 
+	if (in_array($blog_id_b, $managers)) return 1; 
+	return 0;
+}*/
 
 function featuredpostsList($before = '<li>', $after = '</li>') {
 	global $post, $wpdb, $posts_settings;
 	// posts_id from database
 	$posts_id = $posts_settings;
-	
-	foreach ($posts_id as $featured_post) {
-		
-		$ids = split(",",$featured_post);		
-		$featured_blog_post =  get_blog_post($ids[1],$ids[0]);
-		$author = get_user_details_by_id($featured_blog_post->post_author);
-		print '<div style="padding-top: 5px">';
-		print '<a class="linkwediget" href="http://'. $featured_blog_post->guid.'" rel="bookmark" title="Permanent Link to '. $featured_blog_post->guid.'">';
-		print $featured_blog_post->post_title."</a><br />";
-		print '<div class="gray_text_small">'.date('d.m.y',strtotime($featured_blog_post->post_date)) .'| by '.$author[0].' | '.$featured_blog_post->comment_count.' Comment</div>';
-		print '<div class="entry gray_text_mid">'.truncate($featured_blog_post->post_content,200,"...",true,true).'</div>';
-		print "<div style='text-align:right'><a href='http://$featured_blog_post->guid'>read more</a></div>";
-		print '</div>';
+	//usort($posts_id, 'featured_posts_list_sort_by_managers');
+
+	$counter=1;
+	if(!empty($posts_id)) {
+		foreach ($posts_id as $featured_post) {
+			$ids = split(",",$featured_post);
+			if (!ftable_exists("wp_{$ids[1]}_posts")) continue;
+			$featured_blog_post =  get_blog_post($ids[1],$ids[0]);
+			$author = get_user_details_by_id($featured_blog_post->post_author);
+			print '<div class="featured_post_item">';
+			print '<a class="linkwediget" href="'. $featured_blog_post->guid.'" rel="bookmark" title="Permanent Link to '. $featured_blog_post->guid.'">';
+			print $featured_blog_post->post_title."</a><br />";
+			print '<div class="gray_text_small">'.date('d.m.y',strtotime($featured_blog_post->post_date)) .'| by '.$author->user_login.' | '.$featured_blog_post->comment_count.' Comment</div>';
+			print '<div class="entry gray_text_mid">'.truncate(strip_tags($featured_blog_post->post_content),200,"...",true,true).'</div>';
+			print "<div style='text-align:right'><a href='$featured_blog_post->guid'>read more</a></div>";
+			print '</div>';
+			if($counter%2==0)
+			print '<div style="clear:both;"></div>';
+			
+			
+			$counter++;
+		}
+	} else {
+		print "Sorry!, You do not  have Featured Post";
 	}
 }
-
 $data = array ('posts_id' => '' );
 $ol_flash = '';
 $posts_settings = get_option ( 'posts_settings' );
@@ -58,7 +102,7 @@ function posts_add_pages() {
 }
 
 /* Define Constants and variables*/
-define ( 'PLUGIN_URI', get_option ( 'siteurl' ) . '/wp-content/plugins/' );
+//define ( 'PLUGIN_URI', get_option ( 'siteurl' ) . '/wp-content/plugins/' );
 
 /* Functions */
 
@@ -122,9 +166,13 @@ function posts_options_page() {
 		$guid = substr($guid,7,strlen($guid));
 		print '<tr>';
 			print '<td>';
-				if(in_array($row->ID.','.$row->blog_id,$posts_settings)){
+				if($posts_settings) {
+					if(in_array($row->ID.','.$row->blog_id,$posts_settings)){
 					
-					print '<input type="checkbox" name="posts_id[]" value="'.$row->ID.','.$row->blog_id.'" checked />';
+						print '<input type="checkbox" name="posts_id[]" value="'.$row->ID.','.$row->blog_id.'" checked />';
+					} else {
+						print '<input type="checkbox" name="posts_id[]" value="'.$row->ID.','.$row->blog_id.'" />';
+					}
 				} else {
 					print '<input type="checkbox" name="posts_id[]" value="'.$row->ID.','.$row->blog_id.'" />';
 				}
@@ -212,6 +260,25 @@ background-color: #ccc;
 </style>';
 }
 
+function fpl_delete_featured($post_id)
+{
+	global $post, $wpdb, $posts_settings;
+
+	$new_post_settings = array();
+
+	foreach ($posts_settings AS $post_couple)
+	{
+		$post_couple_array = explode(',', $post_couple);
+		//if (!ftable_exists("wp_{$post_couple[1]}_posts")) continue;
+		if ($post_id == trim($post_couple_array[0])) continue;
+		$new_post_settings[] = $post_couple;
+	}
+
+	update_option('posts_settings', $new_post_settings);
+	//$posts_settings = get_option ( 'posts_settings' );
+}
+
 add_action ( 'admin_menu', 'posts_add_pages' );
+add_action ('deleted_post', 'fpl_delete_featured');
 
 ?>
