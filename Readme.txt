@@ -1,6 +1,6 @@
 === Featured Posts WPMU  ===
 Contributors: mamoun.othman
-Plugin URI: none
+Plugin URI: http://www.artofeclipse.com
 Tags: post listing, featured posts, multiple posts, specific post, select post,MU pulgin
 Requires at least: 2.7
 Tested up to: 2.9.1
